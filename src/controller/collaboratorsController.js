@@ -81,7 +81,7 @@ export class CollaboratorsController {
         user_id,
         firstname: name.split(' ')[0],
         lastname: name.replace(name.split(' ')[0], '').trim(),
-        status: 'S'
+        status: 'ACTIVE'
       }
 
       delete data.name
