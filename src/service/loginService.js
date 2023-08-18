@@ -1,11 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../config/database.js'
 import { compare } from 'bcrypt'
-
-const prisma = new PrismaClient()
 
 export class LoginService {
   async execute({ email, password }) {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: {
         email
       }

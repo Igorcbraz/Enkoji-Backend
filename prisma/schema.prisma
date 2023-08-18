@@ -1,21 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = []
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-model User {
-  user_id   Int       @id @default(autoincrement())
-  email     String    @unique @db.VarChar(255)
-  firstName String    @db.VarChar(255)
-  lastName  String?   @db.VarChar(255)
-  status    String?   @default("ACTIVE") @db.VarChar(255)
-  password  String    @db.VarChar(255)
-  createdAt DateTime? @default(now()) @db.Timestamp(6)
-  updatedAt DateTime? @db.Timestamp(6)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -25,4 +15,41 @@ model spatial_ref_sys {
   auth_srid Int?
   srtext    String? @db.VarChar(2048)
   proj4text String? @db.VarChar(2048)
+}
+
+model collaborators {
+  collaborator_id Int       @id @default(autoincrement())
+  firstname       String    @db.VarChar(255)
+  lastname        String    @db.VarChar(255)
+  email           String    @db.VarChar(255)
+  contact         String?   @db.VarChar(20)
+  payment         Decimal?  @db.Decimal(10, 2)
+  birthday        DateTime? @db.Date
+  associationdate DateTime? @db.Date
+  status          String?   @default("S") @db.Char(1)
+  createdat       DateTime? @default(now()) @db.Timestamp(6)
+  updatedat       DateTime? @default(now()) @db.Timestamp(6)
+  user_id         Int?
+  cep             String?   @db.VarChar(255)
+  neighborhood    String?   @db.VarChar(255)
+  complement      String?   @db.VarChar(255)
+  city            String?   @db.VarChar(255)
+  street          String?   @db.VarChar(255)
+  uf              String?   @db.VarChar(255)
+  users           users?    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_id, email], map: "unique_email_per_user")
+}
+
+model users {
+  user_id       Int             @id(map: "User_pkey") @default(autoincrement())
+  email         String          @unique(map: "User_email_key") @db.VarChar(255)
+  firstName     String          @db.VarChar(255)
+  lastName      String?         @db.VarChar(255)
+  status        String?         @default("ACTIVE") @db.VarChar(255)
+  password      String          @db.VarChar(255)
+  createdAt     DateTime?       @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime?       @db.Timestamp(6)
+  role          String?         @default("COLLABORATOR") @db.VarChar(50)
+  collaborators collaborators[]
 }
