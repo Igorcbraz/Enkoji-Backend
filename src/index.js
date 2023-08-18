@@ -14,10 +14,10 @@ app.use(cors())
 
 // get the user from header
 app.use((req, res, next) => {
-  const user = JSON.parse(req.headers.authorization)
+  const user = req.headers.authorization
 
-  if (user.user_id) {
-    req.user = user
+  if (user) {
+    req.user = JSON.parse(user)
   }
 
   next()
