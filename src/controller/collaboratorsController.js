@@ -25,7 +25,8 @@ export class CollaboratorsController {
   }
 
   async getMany(request, response) {
-    const { page = 1, limit = 10, status, user_id } = request.query
+    const { page = 1, limit = 10, status, user_id, filter } = request.query
+    const availableFilters = ['firstname', 'lastname', 'email', 'contact']
 
     if (!user_id || !status) {
       return response.status(400).json({ message: 'ID do usuário e status são obrigatórios' })
@@ -35,17 +36,36 @@ export class CollaboratorsController {
     delete where.page
     delete where.limit
 
-    const formattedWhereTypes = {
-      ...where,
-      user_id: Number(user_id),
+    if (filter) {
+      where.OR = availableFilters.reduce((result, availableFilter) => {
+        result.push({ [availableFilter]: { contains: filter, mode: 'insensitive' } })
+        console.log(result)
+        return result
+      }, [])
+      delete where.filter
     }
 
+    if (availableFilters.some(filter => where[filter])) {
+      where.AND = availableFilters.reduce((result, filter) => {
+        if (where[filter]) {
+          result.push({ [filter]: { search: `%${where[filter]}%` } })
+        }
+        delete where[filter]
+        return result
+      }, [])
+    }
+
+    const whereFormatTypes = {
+      ...where,
+      user_id: Number(where.user_id)
+    }
+    // console.log(whereFormatTypes)
     try {
       const collaboratorService = new CollaboratorsService()
       const { data, meta } = await collaboratorService.getMany({
         page: Number(page),
         limit: Number(limit),
-        where: formattedWhereTypes
+        where: whereFormatTypes
       })
 
       return response.status(200).json({ collaborators: data, meta })

@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = []
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -26,7 +26,7 @@ model collaborators {
   payment         Decimal?  @db.Decimal(10, 2)
   birthday        DateTime? @db.Date
   associationdate DateTime? @db.Date
-  status          String?   @default("S") @db.Char(1)
+  status          String?   @default("ACTIVE") @db.Char(12)
   createdat       DateTime? @default(now()) @db.Timestamp(6)
   updatedat       DateTime? @default(now()) @db.Timestamp(6)
   user_id         Int?
