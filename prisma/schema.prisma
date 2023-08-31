@@ -21,12 +21,12 @@ model collaborators {
   collaborator_id Int       @id @default(autoincrement())
   firstname       String    @db.VarChar(255)
   lastname        String    @db.VarChar(255)
-  email           String    @db.VarChar(255)
+  email           String?   @db.VarChar(255)
   contact         String?   @db.VarChar(20)
   payment         Decimal?  @db.Decimal(10, 2)
   birthday        DateTime? @db.Date
   associationdate DateTime? @db.Date
-  status          String?   @default("ACTIVE") @db.Char(12)
+  status          String?   @default("ACTIVE") @db.VarChar(25)
   createdat       DateTime? @default(now()) @db.Timestamp(6)
   updatedat       DateTime? @default(now()) @db.Timestamp(6)
   user_id         Int?

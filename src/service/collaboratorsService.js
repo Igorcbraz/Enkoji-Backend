@@ -19,11 +19,12 @@ export class CollaboratorsService {
     return collaborator
   }
 
-  async getMany ({ page, limit, where }) {
+  async getMany ({ page, limit, where, orderBy }) {
     const collaborators = await prisma.collaborators.findMany({
       skip: (page - 1) * limit,
       take: limit,
-      where
+      where,
+      orderBy
     })
 
     const count = await prisma.collaborators.count({

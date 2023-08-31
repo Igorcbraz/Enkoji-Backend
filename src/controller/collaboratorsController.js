@@ -59,13 +59,14 @@ export class CollaboratorsController {
       ...where,
       user_id: Number(where.user_id)
     }
-    // console.log(whereFormatTypes)
+
     try {
       const collaboratorService = new CollaboratorsService()
       const { data, meta } = await collaboratorService.getMany({
         page: Number(page),
         limit: Number(limit),
-        where: whereFormatTypes
+        where: whereFormatTypes,
+        orderBy: [{ collaborator_id: 'desc' }]
       })
 
       return response.status(200).json({ collaborators: data, meta })
@@ -79,28 +80,34 @@ export class CollaboratorsController {
     const { user_id } = request.user
     const { name, email } = request.body
 
-    if (!name || !email) {
-      return response.status(400).json({ message: 'Nome e E-mail são obrigatórios' })
+    if (!name) {
+      return response.status(400).json({ message: 'Nome é obrigatório' })
     }
 
     try {
       const collaboratorService = new CollaboratorsService()
-      const collaboratorAlreadyExists = await collaboratorService.getOne({
-        user_id_email: {
-          user_id,
-          email
-        }
-      })
 
-      if (collaboratorAlreadyExists) {
-        return response.status(400).json({ message: 'Já existe um colaborador com esse e-mail' })
+      if (email) {
+        const collaboratorAlreadyExists = await collaboratorService.getOne({
+          user_id_email: {
+            user_id,
+            email
+          }
+        })
+  
+        if (collaboratorAlreadyExists) {
+          return response.status(400).json({ message: 'Já existe um colaborador com esse e-mail' })
+        }
       }
+
+      const firstName = name.split(' ')[0]
+      const lastName = name.replace(firstName, '').trim()
 
       const data = {
         ...request.body,
         user_id,
         firstname: name.split(' ')[0],
-        lastname: name.replace(name.split(' ')[0], '').trim(),
+        lastname: lastName || '',
         status: 'ACTIVE'
       }
 
