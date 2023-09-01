@@ -39,7 +39,6 @@ export class CollaboratorsController {
     if (filter) {
       where.OR = availableFilters.reduce((result, availableFilter) => {
         result.push({ [availableFilter]: { contains: filter, mode: 'insensitive' } })
-        console.log(result)
         return result
       }, [])
       delete where.filter
